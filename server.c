@@ -8,6 +8,7 @@ int main() {
 
     int serverSocket;
     int clientSocket;
+    int state;
 
     struct sockaddr_in server_addr, client_addr;
     socklen_t clientAddrLen = sizeof(client_addr);
@@ -16,7 +17,7 @@ int main() {
     serverSocket = socket(AF_INET, SOCK_STREAM, 0);
     if (serverSocket < 0) {
         printf("Error while creating server socket");
-        return -1;
+        exit(1);
     }
 
     memset(&server_addr, 0, sizeof(server_addr));
@@ -42,7 +43,18 @@ int main() {
         
         char buffer[1024];
         int recieved = recv(clientSocket, buffer, 1024, 0);
-        printf("i recieved %d\n", recieved);
+        printf("i recieved %s\n", buffer);
+        if (strncmp(buffer, "INCR", 4)== 0) {
+           state++;
+           printf("I INCREMANTED THE STATE TO %d", state);
+        }
+        else if (strncmp(buffer, "DECR", 4)== 0) {
+           state--;
+           printf("I DECREMENTED THE STATE TO %d", state);
+        }
+        else {
+            printf("UNKNOWN COMMAND");
+        }
         send(clientSocket, "hello", 6, 0);
     }
 
